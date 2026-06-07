@@ -1,59 +1,49 @@
-import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
-
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
-
+import CustomTabBar from "@/components/CustomTabBar";
+import { getValidSession } from "@/lib/authSession";
+import type { Session } from "@supabase/supabase-js";
+import { Redirect, Tabs } from "expo-router";
+import { useEffect, useState } from "react";
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let subscription: { unsubscribe: () => void } | undefined;
+
+    getValidSession().then(({ session: s }) => {
+      setSession(s);
+      setLoading(false);
+    });
+
+    import("../lib/supabase").then(({ supabase }) => {
+      const { data } = supabase.auth.onAuthStateChange((_event, s) => {
+        setSession(s);
+        setLoading(false);
+      });
+      subscription = data.subscription;
+    });
+
+    return () => subscription?.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return null;
+  }
+
+  if (!session) {
+    return <Redirect href={"/(auth)/Login" as any} />;
+  }
 
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="two"
-        options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
-      />
+      screenOptions={{ headerShown: false }}
+      tabBar={(props) => <CustomTabBar {...props} />}
+    >
+      <Tabs.Screen name="Home" options={{ title: "Home" }} />
+      <Tabs.Screen name="Learn" options={{ title: "Learn" }} />
+      <Tabs.Screen name="index" options={{ title: "Camera" }} />
+      <Tabs.Screen name="AIScreen" options={{ title: "AI" }} />
+      <Tabs.Screen name="Profile" options={{ title: "Profile" }} />
     </Tabs>
   );
 }
