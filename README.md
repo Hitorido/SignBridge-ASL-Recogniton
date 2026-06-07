@@ -1,65 +1,72 @@
-# SignBridge: American Sign Language (ASL) Recognition
+# SignBridge: American Sign Language (ASL) Recognition Mobile App
 
-SignBridge is an artificial intelligence application designed to bridge the communication gap between the Deaf and hearing communities. The system leverages computer vision and deep learning models to capture and interpret real-time hand gestures from a webcam, converting American Sign Language (ASL) signs directly into text or speech.
+SignBridge is a cross-platform mobile application designed to bridge the communication gap between the Deaf and hearing communities. The system leverages mobile computer vision and deep learning models to capture and interpret real-time hand gestures directly from a smartphone camera, converting American Sign Language (ASL) signs into text.
 
 ## 🚀 Features
 
-- **Real-time Detection:** High-speed gesture processing via continuous webcam feed.
-- **Computer Vision Processing:** Hand tracking and landmark extraction using OpenCV/MediaPipe.
-- **Accurate Classification:** Machine learning architecture optimized for ASL vocabulary and alphabets.
+- **Mobile-First Real-Time Detection:** Smooth camera-based gesture processing optimized for mobile devices.
+- **Cross-Platform Accessibility:** Built to run instantly on both Android and iOS devices using the Expo Go environment.
+- **Cloud-Accelerated Intelligence:** Uses an optimized machine learning model trained efficiently using cloud hardware.
 
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Ecosystem
 
-- **Language:** Python
-- **Libraries:** OpenCV, TensorFlow / Keras, MediaPipe, NumPy, Matplotlib
+### Frontend (Mobile App)
 
-## 📦 Installation & Setup
+- **Framework:** React Native
+- **Development Environment:** [Expo Go](https://expo.dev)
+- **Camera Handling:** Expo Camera / VisionCamera
 
-Follow these steps to run the application locally on your machine.
+### Backend & Machine Learning
 
-### 1. Clone the Repository
+- **Core Language:** Python
+- **Libraries:** OpenCV, TensorFlow / Keras, MediaPipe, NumPy
+- **Training Environment:** Google Colab (leveraging cloud GPUs for accelerated training)
+
+## 🧠 Hybrid Workflow & Architecture
+
+This project utilizes a simultaneous hybrid workflow to balance resource-heavy training with a lightweight mobile frontend:
+
+1. **Local Python & MediaPipe:** Used for initial dataset preparation, data augmentation, and extracting 2D/3D hand landmark coordinates.
+2. **Google Colab Training:** The preprocessed landmark datasets are uploaded to Google Colab. By utilizing free cloud-hosted GPUs, the deep learning classification models (TensorFlow/Keras) are trained rapidly without exhausting local hardware resources.
+3. **Mobile Deployment:** The finalized, lightweight trained model weights are exported and integrated into the React Native application. Users can launch the app instantly via **Expo Go** to test real-time inference using their mobile device's camera feed.
+
+## 📦 Installation & Local Development
+
+Because this project utilizes specialized native packages (such as camera or frame processors) that require custom native code syncing, **it cannot be run inside the standard Expo Go app**. You must generate a local development build instead.
+
+### Prerequisites
+
+- Ensure you have [Node.js](https://nodejs.org) installed.
+- Set up [Android Studio](https://android.com) (for Android Emulators) or [Xcode](https://apple.com) (for iOS Simulators) to build native code locally.
+
+### 1. Clone & Install Dependencies
 
 ```bash
 git clone https://github.com
 cd SignBridge-ASL-Recogniton
+npm install
 ```
 
-### 2. Set Up a Virtual Environment (Optional but Recommended)
+### 2. Run the Native Prebuild
+
+Generate the native `/android` and `/ios` directories containing your bundled packages:
 
 ```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
-
-# Mac/Linux
-python3 -m venv venv
-source venv/bin/activate
+npx expo prebuild
 ```
 
-### 3. Install Dependencies
+### 3. Run Locally on an Emulator or Connected Device
 
-Ensure you have all the required Python modules installed:
+Compile the native code and boot the application locally:
 
 ```bash
-pip install -r requirements.txt
+# For Android
+npx expo run:android
+
+# For iOS
+npx expo run:ios
 ```
-
-_(If you do not have a requirements file yet, run: `pip install opencv-python mediapipe tensorflow numpy`)_
-
-### 4. Run the Application
-
-Execute the primary script to start the interface:
-
-```bash
-python main.py
-```
-
-## 🎮 How It Works
-
-1. Launch the application and grant webcam permissions when requested.
-2. Place your hand inside the designated bounding box (Region of Interest) on the screen.
-3. Perform an ASL gesture. The system will display the predicted letter or word on the video interface.
 
 ## 👥 Contributing
 
-Contributions make the open-source community an amazing place to learn, inspire, and create. Feel free to fork this project, open issues, or submit pull requests to improve model accuracy or UI/UX.
+Contributions make the open-source community an amazing place to learn, inspire, and create. Feel free to fork this project, open issues, or submit pull requests to improve gesture translation speed, model architecture, or mobile UI/UX.
